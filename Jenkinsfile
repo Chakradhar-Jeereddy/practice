@@ -7,13 +7,15 @@ pipeline{
   environment{
     course = "jenkins"
   }
+  options{
+    timeout(time: 1, unit: 'SECONDS')
+  }
   stages{
     stage('Build'){
       steps{
         script{
           sh"""
            echo "hello"
-           sleep 20
           """
         }
       }
@@ -22,6 +24,7 @@ pipeline{
       steps{
           sh"""
           echo $course
+          sleep 20
           """
       }
     }
@@ -45,9 +48,6 @@ pipeline{
     }
     failure{
       echo "say the build failed"
-    }
-    option{
-      timeout(time: 10, unit: 'SECONDS')
     }
   }
 }
