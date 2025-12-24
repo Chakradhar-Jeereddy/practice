@@ -49,5 +49,8 @@ pipeline{
     failure{
       echo "say the build failed"
     }
+    aborted{
+      echo "timeout exceeded"
+    }
   }
 }
