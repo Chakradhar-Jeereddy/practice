@@ -12,18 +12,14 @@ pipeline{
       steps{
         script{
           sh"""
-          echo $course
+          echo "hello"
           """
         }
       }
     }
     stage('Test'){
       steps{
-        script{
-          sh"""
-          echo "scripted build"
-          """
-        }
+       echo $course
       }
     }
     stage('Deploy'){
