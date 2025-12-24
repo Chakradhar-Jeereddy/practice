@@ -25,11 +25,6 @@ pipeline{
       steps{
           sh"""
           sudo npm install
-          sudo dnf install openssl -y
-          sudo dnf install openssl-libs -y
-          sudo dnf install openssh -y 
-          sudo dnf install openssh-server -y
-          sudo dnf install openssh-clients -y
           """
       }
     }
