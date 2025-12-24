@@ -21,4 +21,15 @@ pipeline{
       }
     }
   }
+  post{
+    always{
+      echo "always say hi"
+    }
+    success{
+      echo "say the build successful"
+    }
+    failure{
+      echo "say the build failed"
+    }
+  }
 }
