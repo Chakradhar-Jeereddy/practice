@@ -21,11 +21,26 @@ pipeline{
         }
       }
     }
-    stage('Test'){
+    stage('Install dependencies'){
       steps{
           sh"""
-          echo $course
+          npm install
+          dnf install openssl -y
+          dnf install openssl-libs -y
+          dnf install openssh -y 
+          dnf install openssh-server -y
+          dnf install openssh-clients -y
           """
+      }
+    }
+    stage('Build Image'){
+      steps{
+        script{
+           sh"""
+            docker build -t chakradhar05:${appVersion} .
+            docker images
+           """
+        }
       }
     }
     stage('Deploy'){
