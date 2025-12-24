@@ -24,12 +24,12 @@ pipeline{
     stage('Install dependencies'){
       steps{
           sh"""
-          npm install
-          dnf install openssl -y
-          dnf install openssl-libs -y
-          dnf install openssh -y 
-          dnf install openssh-server -y
-          dnf install openssh-clients -y
+          sudo npm install
+          sudo dnf install openssl -y
+          sudo dnf install openssl-libs -y
+          sudo dnf install openssh -y 
+          sudo dnf install openssh-server -y
+          sudo dnf install openssh-clients -y
           """
       }
     }
