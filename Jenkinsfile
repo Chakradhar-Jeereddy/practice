@@ -19,7 +19,9 @@ pipeline{
     }
     stage('Test'){
       steps{
-       echo "hello"
+        script{
+          echo $course
+        }
       }
     }
     stage('Deploy'){
