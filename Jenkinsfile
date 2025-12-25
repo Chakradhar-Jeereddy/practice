@@ -53,6 +53,7 @@ pipeline{
     post{
         always{
             echo "Deployment is completed"
+            cleanWs()
         }
     }
 }
