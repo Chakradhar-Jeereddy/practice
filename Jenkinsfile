@@ -4,7 +4,7 @@ pipeline{
             label "agent"
         }
     }
-    option{
+    options{
         disableConcurrentBuilds()
     }
     environment{
