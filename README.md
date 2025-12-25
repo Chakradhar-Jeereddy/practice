@@ -3,9 +3,9 @@ Follow catalogue documentation:
  https://github.com/daws-86s/roboshop-documentation/blob/main/02-catalogue.MD
 - Install required softwares on Jenkin's agent to build the catalogue image
 ```
-dnf module disable nodejs -y
-dnf module enable nodejs:20 -y
-dnf install nodejs -y
+sudo dnf module disable nodejs -y
+sudo dnf module enable nodejs:20 -y
+sudo dnf install nodejs -y
 ```
 - Update the version in package.json file.
 -   "version": "1.1.0"
@@ -61,15 +61,53 @@ pipeline{
       echo "always say hi"
       cleanWs()
     }
-    success{
-      echo "say the build successful"
-    }
-    failure{
-      echo "say the build failed"
-    }
-    aborted{
-      echo "timeout exceeded"
-    }
   }
 }
 ```
+***add a new stage***
+- Install dependencies
+- npm conflicts with openssl, therefore installing dependencies for openssl.
+```
+stage('Install dependencies'){
+      steps{
+          sh"""
+          npm install
+          dnf install openssl -y
+          dnf install openssl-libs -y
+          dnf install openssh -y 
+          dnf install openssh-server -y
+          dnf install openssh-clients -y
+          """
+      }
+}
+```
+
+***Install docker on Jekins agent:***
+```
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo systemctl daemon-reload
+sudo systemctl start docker
+sudo systemctl status docker
+sudo systemctl enable docker
+sudo usermod -G docker ec2-user
+reconnect agent in jenkins after docker is installed
+```
+***add Another stage to build image***
+```
+    stage('Build Image'){
+      steps{
+        script{
+           sh"""
+            docker build -t chakradhar05:${appVersion} .
+            docker images
+            """
+        }
+      }
+    }
+```
+
+
+
+
