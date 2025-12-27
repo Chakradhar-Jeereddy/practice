@@ -1,80 +1,95 @@
 pipeline{
-    agent{
-        node{
-            label "agent"
-        }
+ agent{
+  node{
+  label "agent"
+  }
+ }
+ parameters {
+        string(name: 'PERSON', defaultValue: 'Mr Chakradhar', description: 'Who should I say hello to?')
+        booleanParam(name: 'Deploy', defaultValue: false, description: 'Toggle this value')
+ }
+ environment{
+ course = "jenkins"
+ apiVersion = ""
+ acc_id = "406682759639"
+ project = "chakra"
+ component = "catalogue"
+ }
+ options{
+  disableConcurrentBuilds()
+ }
+ stages{
+    stage('Read json file'){
+    steps{
+     script{
+     def packagejson = readJSON file: "package.json"
+     apiVersion = packagejson.version
+     echo "apiversion: ${apiVersion}"
+     }
     }
-    options{
-        disableConcurrentBuilds()
-    }
-    environment{
-        appVersion = ""
-        acc_id = "406682759639"
-        project = "chakra"
-        component = "catalogue"
-    }
-    parameters {
-        string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
-
-        booleanParam(name: 'Deploy', defaultValue: false, description: 'Do you want to deploy?')
-
-    }
-    stages{
-        stage('Read appVersion'){
-            steps{
-              script{
-              def packageJSON = readJSON file: 'package.json'
-              appVersion = packageJSON.version
-              }
-            }
-        }
-        stage('Sonar Scan'){
-            environment {
-                def scannerHome = tool 'sonar-8.0'
-            }
-            steps {
-                script{
+  }
+  stage('Sonar Code Analysis') {
+   environment{
+   def scannerHome = tool 'sonar-8.0'
+   }
+   steps {
+                script {
                     withSonarQubeEnv('sonar-server') {
-                        sh  "${scannerHome}/bin/sonar-scanner"
+                    sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
-            }
-        }
-        stage('Build catalogue image'){
-            steps{
-                script{
-                 withAWS(region:'us-east-1',credentials:'aws-creds') {
-                  sh"""
-                  aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${acc_id}.dkr.ecr.us-east-1.amazonaws.com
-                  docker build -t ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion} .
-                  docker images
-                  docker push ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion}
-                  """
-                 }
-                }   
-            }
-        }
-        stage('Test'){
-            steps{
-              sh"""
-              echo "Testing"
-              sleep 10
-              """
-            }
-        }
-        stage('Deploy'){
-            when{
-                expression { "${params.Deploy}" == "true" }
-            }
-            steps{
-                 echo "Deploying"
-            }
-        }
+   }
+  }
+  stage('Quality Gate') {
+   steps {
+      // Wait for Quality Gate, fail build if needed
+      timeout(time: 1, unit: 'HOURS') {
+        waitForQualityGate abortPipeline: true
+      }
+   }
+  }      
+  stage('Build catalogue image'){
+    steps{
+      withAWS(region:'us-east-1',credentials:'aws-ecr') {
+      sh"""
+      aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${acc_id}.dkr.ecr.us-east-1.amazonaws.com
+      docker build -t ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${apiVersion} .
+      docker push ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${apiVersion}
+      """
+      }
     }
-    post{
-        always{
-            echo "Deployment is completed"
-            cleanWs()
-        }
+  }
+  stage('Test'){
+    environment{
+    name = "chakras testing"
     }
+    steps{
+    echo "Testing"
+    echo "${name}"
+    }
+  }
+  stage('Deploy'){
+    when{
+    expression { params.Deploy == "true" }
+    }
+    steps{
+    echo "Deploying"
+    }
+  }
+ }
+ post{
+  always{
+   cleanWs()
+   echo "Always say hi"
+  }
+  success{
+  echo "Passed the deployment"
+  }
+  failure{
+  echo "Deployment failed"
+  }
+  aborted{
+  echo "deployment aborted"
+  }
+ }
 }
