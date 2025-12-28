@@ -6,6 +6,11 @@ Follow catalogue documentation:
 sudo dnf module disable nodejs -y
 sudo dnf module enable nodejs:20 -y
 sudo dnf install nodejs -y
+sudo dnf install openssl -y
+sudo dnf install openssl-libs -y
+sudo dnf install openssh -y 
+sudo dnf install openssh-server -y
+sudo dnf install openssh-clients -y
 ```
 - Update the version in package.json file.
 -   "version": "1.1.0"
@@ -72,11 +77,6 @@ stage('Install dependencies'){
       steps{
           sh"""
           npm install
-          dnf install openssl -y
-          dnf install openssl-libs -y
-          dnf install openssh -y 
-          dnf install openssh-server -y
-          dnf install openssh-clients -y
           """
       }
 }
