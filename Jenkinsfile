@@ -6,7 +6,7 @@ def configMap : [
     component: 'catalogue'
 ]
 
-// If this is not master branch
+// If this is not a master branch
 if (! env.BRANCH_NAME.equalsIgnoreCase('main')) {
     nodeJSEKSPipeline('configMap')
 } else {
