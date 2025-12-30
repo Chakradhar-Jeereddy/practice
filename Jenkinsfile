@@ -1,15 +1,15 @@
-@Library('jenkins-shared-library') _
+@Library('jenkins-shared-library') _ 
 
-// below function will pass the arguments to the pipeline in shared library
-def configMap = [
-    project: 'roboshop',
-    component: 'catalogue'
+// /vars/nodeJSEKSPipeline
+def mymap = [
+     project: 'roboshop',
+     component: 'catalogue'
+     acc_id: '406682759639'
 ]
 
-// If this is not master branch
-if (! env.BRANCH_NAME.equalsIgnoreCase('main')) {
-    nodeJSEKSPipeline(configMap)
-} 
-else {
-    echo "Please follow the CR process"
+if( ! env.BRANCH_NAME.equalsIgnoreCase('main') ){
+      nodeJSEKSPipeline(mymap)
+}
+else{
+  echo "Please fallow the CR process"
 }
