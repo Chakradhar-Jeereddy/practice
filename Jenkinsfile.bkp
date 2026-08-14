@@ -1,7 +1,7 @@
 pipeline{
  agent{
   node{
-  label "agent"
+   label "agent"
   }
  }
  parameters {
@@ -9,11 +9,11 @@ pipeline{
         booleanParam(name: 'Deploy', defaultValue: false, description: 'Toggle this value')
  }
  environment{
- course = "jenkins"
- apiVersion = ""
- acc_id = "406682759639"
- project = "chakra"
- component = "catalogue"
+   course = "jenkins"
+   apiVersion = ""
+   acc_id = "406682759639"
+   project = "chakra"
+   component = "catalogue"
  }
  options{
   disableConcurrentBuilds()
